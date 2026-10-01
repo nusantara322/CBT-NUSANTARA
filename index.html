@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT NUSANTARA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased">
+
+    <!-- Header Navigation Bar -->
+    <header class="bg-slate-800 border-b border-slate-700 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-lg">
+        <div class="flex items-center space-x-3">
+            <div class="bg-blue-600 text-white p-2 rounded-lg">
+                <i class="fa-solid fa-school text-xl"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight">CBT NUSANTARA</h1>
+                <p class="text-xs text-slate-400">Portal Ujian SMP-SMA Nusantara</p>
+            </div>
+        </div>
+        <div>
+            <button onclick="promptAdminLogin()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 px-3 py-2 rounded-md font-medium transition flex items-center gap-1.5">
+                <i class="fa-solid fa-lock text-amber-400"></i>
+                <span>Panel Guru</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="container mx-auto p-4 max-w-6xl">
+
+        <!-- REGISTRATION & EXAM SELECTION VIEW -->
+        <section id="loginSection" class="max-w-md mx-auto my-8 bg-slate-800 p-8 rounded-xl border border-slate-700 shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-blue-500/10 text-blue-400 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i class="fa-solid fa-user-graduate text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-white">Portal Ujian Siswa</h2>
+                <p class="text-slate-400 text-sm mt-1">Pilih sekolah, mata pelajaran & isi data diri</p>
+            </div>
+
+            <form id="studentLoginForm" onsubmit="handleStartExam(event)" class="space-y-4">
+                
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
+                        <i class="fa-solid fa-building-columns text-blue-400 mr-1"></i> 1. Pilih Sekolah
+                    </label>
+                    <select id="selectSchool" onchange="onSchoolSelected()" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 transition">
+                        <option value="">-- Memuat Daftar Sekolah --</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
+                        <i class="fa-solid fa-book-bookmark text-blue-400 mr-1"></i> 2. Pilih Mata Pelajaran / Ujian
+                    </label>
+                    <select id="selectExamSubject" onchange="updateSelectedExamDetails()" required disabled class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 transition disabled:opacity-50">
+                        <option value="">-- Pilih Sekolah Terlebih Dahulu --</option>
+                    </select>
+                </div>
+
+                <div id="examDetailPreview" class="bg-slate-900/80 p-3.5 rounded-lg border border-slate-700/80 text-xs space-y-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400"><i class="fa-regular fa-clock mr-1"></i> Durasi:</span>
+                        <strong id="previewDuration" class="text-blue-400 font-mono">-</strong>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400"><i class="fa-solid fa-triangle-exclamation mr-1 text-amber-400"></i> Batas Pelanggaran:</span>
+                        <strong id="previewMaxViolations" class="text-slate-200 font-mono">-</strong>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Nama Lengkap</label>
+                    <input type="text" id="studentName" required placeholder="Masukkan nama lengkap" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 transition">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">NISN / ID Siswa</label>
+                        <input type="text" id="studentNisn" required placeholder="12345678" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 transition">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Kelas</label>
+                        <input type="text" id="studentClass" required placeholder="X IPA 1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 focus:outline-none focus:border-blue-500 transition">
+                    </div>
+                </div>
+
+                <button type="submit" id="btnStartExam" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg shadow-lg transition duration-200 flex items-center justify-center space-x-2">
+                    <span>Mulai Ujian</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- SECURE EXAM SCREEN -->
+        <section id="examSection" class="hidden space-y-4">
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-lg">
+                <div class="flex items-center space-x-4">
+                    <div class="bg-blue-600/20 text-blue-400 p-3 rounded-lg">
+                        <i class="fa-solid fa-book-open text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-white" id="currentExamTitle">Mata Pelajaran</h3>
+                        <p class="text-xs text-slate-400" id="currentStudentInfo">Siswa: - | NISN: -</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-6">
+                    <div class="bg-slate-900 px-4 py-2 rounded-lg border border-slate-700 text-center">
+                        <span class="block text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Pelanggaran</span>
+                        <div class="text-red-400 font-bold text-lg flex items-center justify-center space-x-1">
+                            <i class="fa-solid fa-triangle-exclamation text-sm"></i>
+                            <span id="violationCount">0</span>/<span id="maxViolationAllowed">3</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900 px-5 py-2 rounded-lg border border-slate-700 text-center">
+                        <span class="block text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Sisa Waktu</span>
+                        <div class="text-emerald-400 font-mono font-bold text-xl" id="timerDisplay">
+                            00:00:00
+                        </div>
+                    </div>
+
+                    <button onclick="confirmFinishExam()" class="bg-red-600 hover:bg-red-500 text-white font-semibold px-4 py-2.5 rounded-lg text-sm shadow transition">
+                        Selesaikan Ujian
+                    </button>
+                </div>
+            </div>
+
+            <div class="relative bg-white rounded-xl overflow-hidden border border-slate-700 shadow-2xl h-[75vh]">
+                <div id="lockOverlay" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md z-40 flex flex-col items-center justify-center text-center p-6 space-y-4">
+                    <div class="w-20 h-20 bg-red-600/20 text-red-500 rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-lock text-4xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-red-500">UJIAN TERKUNCI!</h2>
+                    <p class="text-slate-300 max-w-md text-sm">Anda telah melebihi batas toleransi pelanggaran. Sesi ujian dihentikan secara otomatis.</p>
+                    <button onclick="finishExam()" class="mt-4 px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs rounded-lg font-semibold">Kembali ke Beranda</button>
+                </div>
+
+                <iframe id="googleFormIframe" src="about:blank" class="w-full h-full border-0" allow="fullscreen"></iframe>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ADMIN AUTHENTICATION MODAL -->
+    <div id="adminAuthModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-md shadow-2xl p-6 space-y-4">
+            <div class="text-center">
+                <div class="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <i class="fa-solid fa-user-lock text-xl"></i>
+                </div>
+                <h3 class="font-bold text-lg text-white">Autentikasi Panel Guru</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Masukkan Kata Sandi Administrator Ujian</p>
+            </div>
+
+            <form onsubmit="submitAdminAuth(event)" class="space-y-3">
+                <div>
+                    <input type="password" id="adminPasswordInput" required placeholder="Kata Sandi Admin" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-100 text-sm text-center focus:outline-none focus:border-blue-500">
+                </div>
+                <div id="authErrorMessage" class="hidden text-xs text-red-400 text-center font-medium"></div>
+
+                <div class="flex space-x-2 pt-2">
+                    <button type="button" onclick="closeAuthModal()" class="w-1/2 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-xs font-semibold">Batal</button>
+                    <button type="submit" class="w-1/2 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-xs font-semibold shadow">Verifikasi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TEACHER & SCHOOL MANAGEMENT MODAL -->
+    <div id="adminModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-3xl shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-700 flex justify-between items-center bg-slate-800">
+                <h3 class="font-bold text-lg text-white"><i class="fa-solid fa-sliders text-blue-400 mr-2"></i> Panel Kelola Ujian & Sekolah</h3>
+                <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto space-y-6 flex-1">
+                <div class="bg-slate-900/90 p-4 rounded-lg border border-slate-700 space-y-3">
+                    <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider"><i class="fa-solid fa-school mr-1"></i> Kelola Daftar Sekolah</h4>
+                    <form onsubmit="addNewSchool(event)" class="flex gap-2">
+                        <input type="text" id="newSchoolName" placeholder="Nama Sekolah Baru (Contoh: SMA Negeri 1)" required class="flex-1 bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                        <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white px-4 py-1.5 rounded text-xs font-semibold shadow">
+                            + Tambah Sekolah
+                        </button>
+                    </form>
+                    <div id="adminSchoolListContainer" class="flex flex-wrap gap-2 pt-2"></div>
+                </div>
+
+                <div class="bg-slate-900/90 p-4 rounded-lg border border-slate-700 space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider"><i class="fa-solid fa-file-pen mr-1"></i> Kelola Ujian Mata Pelajaran</h4>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs text-slate-400">Pilih Sekolah:</span>
+                            <select id="adminFilterSchool" onchange="onAdminSchoolFilterChange()" class="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-xs text-slate-100 focus:outline-none">
+                            </select>
+                        </div>
+                    </div>
+
+                    <form onsubmit="addNewExam(event)" class="space-y-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-semibold uppercase text-slate-300 mb-1">Mata Pelajaran</label>
+                                <input type="text" id="newTitle" placeholder="Contoh: Matematika Kelas X" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold uppercase text-slate-300 mb-1">Durasi (Menit)</label>
+                                <input type="number" id="newDuration" min="1" max="300" placeholder="60" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold uppercase text-slate-300 mb-1">Embed Link Google Form (URL)</label>
+                            <input type="url" id="newUrl" placeholder="https://docs.google.com/forms/d/e/.../viewform?embedded=true" required class="w-full bg-slate-800 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500">
+                        </div>
+
+                        <div class="flex justify-between items-center pt-1">
+                            <div class="flex items-center space-x-2">
+                                <label class="text-[11px] font-semibold uppercase text-slate-300">Max Pelanggaran:</label>
+                                <input type="number" id="newMaxViolations" min="1" max="10" value="3" required class="w-16 bg-slate-800 border border-slate-700 rounded px-2 py-1 text-sm text-slate-100 focus:outline-none focus:border-blue-500 text-center">
+                            </div>
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded text-xs font-semibold shadow">
+                                + Tambahkan Ujian ke Sekolah Terpilih
+                            </button>
+                        </div>
+                    </form>
+
+                    <div>
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Daftar Ujian Aktif (<span id="activeExamsCount">0</span>)</h5>
+                        <div id="examsListContainer" class="space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-4 border-t border-slate-700 bg-slate-800/50 flex justify-end">
+                <button onclick="closeAdminModal()" class="px-5 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-lg text-xs font-semibold">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC WITH LIFECYCLE MANAGEMENT -->
+    <script>
+        let schoolList = [];
+        let currentSchoolExams = [];
+        let selectedExam = null;
+        let authenticatedAdminPassword = "";
+        let currentStudent = {};
+        
+        // Anti-leak state management
+        let timerInterval = null;
+        let totalTimeSeconds = 0;
+        let violationCount = 0;
+        let isExamActive = false;
+        let listenersInitialized = false;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchPublicSchools();
+            setupAntiCheatListenersOnce();
+        });
+
+        // 1. PUBLIC SCHOOL & EXAM LOGIC
+        function fetchPublicSchools() {
+            google.script.run
+                .withSuccessHandler(data => {
+                    schoolList = data || [];
+                    renderSchoolDropdown();
+                })
+                .withFailureHandler(err => handleServerError("Gagal mengambil data sekolah", err))
+                .getPublicSchoolList();
+        }
+
+        function renderSchoolDropdown() {
+            const selectEl = document.getElementById('selectSchool');
+            selectEl.innerHTML = '<option value="">-- Pilih Sekolah --</option>';
+
+            schoolList.forEach(sch => {
+                const opt = document.createElement('option');
+                opt.value = sch.id;
+                opt.innerText = sch.name;
+                selectEl.appendChild(opt);
+            });
+        }
+
+        function onSchoolSelected() {
+            const schoolId = document.getElementById('selectSchool').value;
+            const examSelectEl = document.getElementById('selectExamSubject');
+
+            if (!schoolId) {
+                examSelectEl.innerHTML = '<option value="">-- Pilih Sekolah Terlebih Dahulu --</option>';
+                examSelectEl.disabled = true;
+                resetExamPreview();
+                return;
+            }
+
+            examSelectEl.disabled = false;
+            examSelectEl.innerHTML = '<option value="">Memuat data ujian...</option>';
+
+            google.script.run
+                .withSuccessHandler(exams => {
+                    currentSchoolExams = exams || [];
+                    renderExamDropdown();
+                })
+                .withFailureHandler(err => handleServerError("Gagal mengambil daftar ujian", err))
+                .getPublicExamsBySchool(schoolId);
+        }
+
+        function renderExamDropdown() {
+            const examSelectEl = document.getElementById('selectExamSubject');
+            examSelectEl.innerHTML = '';
+
+            if (currentSchoolExams.length === 0) {
+                examSelectEl.innerHTML = '<option value="">-- Belum ada ujian di sekolah ini --</option>';
+                resetExamPreview();
+                return;
+            }
+
+            currentSchoolExams.forEach(exam => {
+                const opt = document.createElement('option');
+                opt.value = exam.id;
+                opt.innerText = exam.title;
+                examSelectEl.appendChild(opt);
+            });
+
+            updateSelectedExamDetails();
+        }
+
+        function updateSelectedExamDetails() {
+            const selectedId = document.getElementById('selectExamSubject').value;
+            selectedExam = currentSchoolExams.find(e => e.id === selectedId);
+
+            if (selectedExam) {
+                document.getElementById('previewDuration').innerText = `${selectedExam.durationMinutes} Menit`;
+                document.getElementById('previewMaxViolations').innerText = `${selectedExam.maxViolations}x`;
+            } else {
+                resetExamPreview();
+            }
+        }
+
+        function resetExamPreview() {
+            document.getElementById('previewDuration').innerText = '-';
+            document.getElementById('previewMaxViolations').innerText = '-';
+            selectedExam = null;
+        }
+
+        // 2. ADMIN PANEL LOGIC
+        function promptAdminLogin() {
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('authErrorMessage').classList.add('hidden');
+            document.getElementById('adminAuthModal').classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('adminAuthModal').classList.add('hidden');
+        }
+
+        function submitAdminAuth(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPasswordInput').value;
+
+            google.script.run
+                .withSuccessHandler(res => {
+                    if (res && res.success) {
+                        authenticatedAdminPassword = pass;
+                        closeAuthModal();
+                        showAdminModal();
+                    } else {
+                        const err = document.getElementById('authErrorMessage');
+                        err.innerText = res ? res.message : "Gagal memverifikasi password.";
+                        err.classList.remove('hidden');
+                    }
+                })
+                .withFailureHandler(err => handleServerError("Gagal verifikasi password", err))
+                .verifyAdminPassword(pass);
+        }
+
+        function showAdminModal() {
+            fetchAdminSchools();
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+            fetchPublicSchools();
+        }
+
+        function fetchAdminSchools() {
+            google.script.run
+                .withSuccessHandler(schools => {
+                    renderAdminSchoolTags(schools || []);
+                    renderAdminSchoolFilterDropdown(schools || []);
+                    onAdminSchoolFilterChange();
+                })
+                .withFailureHandler(err => handleServerError("Gagal mengambil daftar sekolah admin", err))
+                .getAdminSchoolList(authenticatedAdminPassword);
+        }
+
+        function renderAdminSchoolTags(schools) {
+            const container = document.getElementById('adminSchoolListContainer');
+            container.innerHTML = '';
+
+            schools.forEach(sch => {
+                const tag = document.createElement('div');
+                tag.className = 'bg-slate-800 border border-slate-700 text-xs px-3 py-1 rounded-full flex items-center space-x-2';
+                tag.innerHTML = `
+                    <span class="text-slate-200 font-medium">${sch.name}</span>
+                    <button onclick="deleteSchool('${sch.id}')" class="text-red-400 hover:text-red-300">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                `;
+                container.appendChild(tag);
+            });
+        }
+
+        function renderAdminSchoolFilterDropdown(schools) {
+            const selectEl = document.getElementById('adminFilterSchool');
+            selectEl.innerHTML = '';
+            schools.forEach(sch => {
+                const opt = document.createElement('option');
+                opt.value = sch.id;
+                opt.innerText = sch.name;
+                selectEl.appendChild(opt);
+            });
+        }
+
+        function addNewSchool(e) {
+            e.preventDefault();
+            const name = document.getElementById('newSchoolName').value.trim();
+            if (!name) return;
+
+            google.script.run
+                .withSuccessHandler(res => {
+                    if (res && res.success) {
+                        document.getElementById('newSchoolName').value = '';
+                        renderAdminSchoolTags(res.schools);
+                        renderAdminSchoolFilterDropdown(res.schools);
+                        onAdminSchoolFilterChange();
+                    }
+                })
+                .withFailureHandler(err => handleServerError("Gagal menambah sekolah", err))
+                .saveNewSchoolServer(authenticatedAdminPassword, name);
+        }
+
+        function deleteSchool(schoolId) {
+            if (confirm("Menghapus sekolah ini akan MENGHAPUS SEMUA UJIAN di dalamnya. Yakin?")) {
+                google.script.run
+                    .withSuccessHandler(res => {
+                        if (res && res.success) {
+                            renderAdminSchoolTags(res.schools);
+                            renderAdminSchoolFilterDropdown(res.schools);
+                            onAdminSchoolFilterChange();
+                        }
+                    })
+                    .withFailureHandler(err => handleServerError("Gagal menghapus sekolah", err))
+                    .deleteSchoolServer(authenticatedAdminPassword, schoolId);
+            }
+        }
+
+        function onAdminSchoolFilterChange() {
+            const schoolId = document.getElementById('adminFilterSchool').value;
+            if (!schoolId) {
+                renderAdminExamsList([]);
+                return;
+            }
+
+            google.script.run
+                .withSuccessHandler(exams => renderAdminExamsList(exams || []))
+                .withFailureHandler(err => handleServerError("Gagal mengambil data ujian admin", err))
+                .getAdminExamsList(authenticatedAdminPassword, schoolId);
+        }
+
+        function renderAdminExamsList(list) {
+            const container = document.getElementById('examsListContainer');
+            document.getElementById('activeExamsCount').innerText = list.length;
+            container.innerHTML = '';
+
+            if (list.length === 0) {
+                container.innerHTML = '<div class="text-center text-slate-500 py-3 text-xs">Belum ada ujian di sekolah ini.</div>';
+                return;
+            }
+
+            list.forEach(exam => {
+                const item = document.createElement('div');
+                item.className = 'bg-slate-900 p-3 rounded-lg border border-slate-700 flex justify-between items-center text-xs';
+                item.innerHTML = `
+                    <div class="space-y-0.5">
+                        <div class="font-bold text-slate-100">${exam.title}</div>
+                        <div class="text-[11px] text-slate-400">
+                            <span class="mr-3"><i class="fa-regular fa-clock mr-1"></i>${exam.durationMinutes} Menit</span>
+                            <span><i class="fa-solid fa-triangle-exclamation mr-1 text-amber-400"></i>Max ${exam.maxViolations}x</span>
+                        </div>
+                    </div>
+                    <button onclick="deleteExam('${exam.id}')" class="text-red-400 hover:text-red-300 p-1.5 hover:bg-slate-800 rounded transition">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function addNewExam(e) {
+            e.preventDefault();
+            const schoolId = document.getElementById('adminFilterSchool').value;
+            if (!schoolId) {
+                alert("Pilih/buat sekolah terlebih dahulu!");
+                return;
+            }
+
+            const newExam = {
+                schoolId: schoolId,
+                title: document.getElementById('newTitle').value.trim(),
+                durationMinutes: parseInt(document.getElementById('newDuration').value),
+                formUrl: document.getElementById('newUrl').value.trim(),
+                maxViolations: parseInt(document.getElementById('newMaxViolations').value)
+            };
+
+            google.script.run
+                .withSuccessHandler(res => {
+                    if (res && res.success) {
+                        document.getElementById('newTitle').value = '';
+                        document.getElementById('newDuration').value = '';
+                        document.getElementById('newUrl').value = '';
+                        renderAdminExamsList(res.exams);
+                    }
+                })
+                .withFailureHandler(err => handleServerError("Gagal menyimpan ujian baru", err))
+                .saveNewExamServer(authenticatedAdminPassword, newExam);
+        }
+
+        function deleteExam(id) {
+            const schoolId = document.getElementById('adminFilterSchool').value;
+            if (confirm("Hapus ujian ini dari daftar?")) {
+                google.script.run
+                    .withSuccessHandler(res => {
+                        if (res && res.success) renderAdminExamsList(res.exams);
+                    })
+                    .withFailureHandler(err => handleServerError("Gagal menghapus ujian", err))
+                    .deleteExamServer(authenticatedAdminPassword, id, schoolId);
+            }
+        }
+
+        // 3. START & FINISH EXAM LIFECYCLE
+        function handleStartExam(e) {
+            e.preventDefault();
+            if (!selectedExam) {
+                alert("Silakan pilih sekolah dan mata pelajaran terlebih dahulu.");
+                return;
+            }
+
+            currentStudent = {
+                name: document.getElementById('studentName').value.trim(),
+                nisn: document.getElementById('studentNisn').value.trim(),
+                class: document.getElementById('studentClass').value.trim()
+            };
+
+            google.script.run
+                .withSuccessHandler(examData => {
+                    if (!examData || !examData.formUrl) {
+                        alert("Gagal memuat URL Google Form untuk ujian ini!");
+                        return;
+                    }
+
+                    requestFullscreen();
+
+                    document.getElementById('currentExamTitle').innerText = examData.title;
+                    document.getElementById('currentStudentInfo').innerText = `Siswa: ${currentStudent.name} (${currentStudent.class}) | NISN: ${currentStudent.nisn}`;
+                    document.getElementById('maxViolationAllowed').innerText = examData.maxViolations;
+                    document.getElementById('googleFormIframe').src = examData.formUrl;
+
+                    document.getElementById('loginSection').classList.add('hidden');
+                    document.getElementById('examSection').classList.remove('hidden');
+
+                    // Reset State
+                    violationCount = 0;
+                    document.getElementById('violationCount').innerText = violationCount;
+                    document.getElementById('lockOverlay').classList.add('hidden');
+                    
+                    isExamActive = true;
+                    startTimer(examData.durationMinutes * 60);
+                })
+                .withFailureHandler(err => handleServerError("Gagal mulai ujian", err))
+                .getExamFormUrl(selectedExam.id);
+        }
+
+        function requestFullscreen() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) elem.requestFullscreen().catch(() => {});
+        }
+
+        function startTimer(seconds) {
+            // Bersihkan timer lama jika ada
+            if (timerInterval) clearInterval(timerInterval);
+
+            totalTimeSeconds = seconds;
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                if (!isExamActive) {
+                    clearInterval(timerInterval);
+                    return;
+                }
+
+                totalTimeSeconds--;
+                updateTimerDisplay();
+
+                if (totalTimeSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Waktu ujian telah habis!");
+                    finishExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const hrs = Math.floor(totalTimeSeconds / 3600);
+            const mins = Math.floor((totalTimeSeconds % 3600) / 60);
+            const secs = totalTimeSeconds % 60;
+
+            document.getElementById('timerDisplay').innerText = 
+                `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        // Anti-Cheat listener diatur SATU KALI SAJA
+        function setupAntiCheatListenersOnce() {
+            if (listenersInitialized) return;
+            listenersInitialized = true;
+
+            document.addEventListener('contextmenu', e => {
+                if (isExamActive) {
+                    e.preventDefault();
+                    triggerViolation("Klik kanan dilarang saat ujian.");
+                }
+            });
+
+            document.addEventListener('keydown', e => {
+                if (!isExamActive) return;
+                if (
+                    e.key === 'F12' || 
+                    (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                    (e.ctrlKey && e.key === 'c') || 
+                    (e.ctrlKey && e.key === 'v') ||
+                    (e.ctrlKey && e.key === 'u')
+                ) {
+                    e.preventDefault();
+                    triggerViolation("Pintasan keyboard dilarang!");
+                }
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (isExamActive && document.hidden) {
+                    triggerViolation("Meninggalkan tab atau aplikasi ujian!");
+                }
+            });
+
+            window.addEventListener('blur', () => {
+                if (isExamActive) {
+                    triggerViolation("Fokus layar terlepas!");
+                }
+            });
+        }
+
+        function triggerViolation(reason) {
+            if (!isExamActive) return;
+
+            violationCount++;
+            document.getElementById('violationCount').innerText = violationCount;
+
+            if (violationCount >= selectedExam.maxViolations) {
+                isExamActive = false;
+                if (timerInterval) clearInterval(timerInterval);
+                document.getElementById('lockOverlay').classList.remove('hidden');
+            } else {
+                alert(`PERINGATAN KECURANGAN (${violationCount}/${selectedExam.maxViolations}):\n${reason}`);
+            }
+        }
+
+        function confirmFinishExam() {
+            if (confirm("Apakah Anda yakin telah menekan Kirim (Submit) di Google Form?")) {
+                finishExam();
+            }
+        }
+
+        function finishExam() {
+            // Safely Reset All Lifecycle Items
+            isExamActive = false;
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+
+            document.getElementById('googleFormIframe').src = 'about:blank';
+            document.getElementById('lockOverlay').classList.add('hidden');
+            document.getElementById('examSection').classList.add('hidden');
+            document.getElementById('loginSection').classList.remove('hidden');
+            
+            // Reset Form State
+            document.getElementById('studentLoginForm').reset();
+            onSchoolSelected();
+            
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        function handleServerError(context, error) {
+            console.error(`[Server Error] ${context}:`, error);
+            alert(`${context}. Silakan periksa koneksi internet Anda atau coba beberapa saat lagi.`);
+        }
+    </script>
+</body>
+</html>
